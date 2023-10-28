@@ -1,0 +1,82 @@
+FINISH
+/CLEAR
+
+L=0.15
+B=0.008
+H=0.002
+E=2e11
+MU=0.3
+M=0.1
+
+/prep7
+ET,1,BEAM188,,,3
+ET,2,MASS21,,,4
+ET,3,MASS21,,,3 ! МАССА С ИНЕРЦИЕЙ
+
+MP,EX,1,E
+MP,PRXY,1,MU
+
+SECTYPE,1,BEAM,RECT
+SECDATA,B,H
+
+R,2,M*2
+R,3,M,M*L*L/12
+
+N,1,0,0,0
+N,2,L,0,0
+N,3,L*2,0,0
+N,4,0,L/4,0 ! ОРИЕНТАЦИОННЫЙ УЗЕЛ
+
+TYPE,1 ! ИСПОЛЬЗУЕМ ПЕРВЫЙ ТИП ЭЛЕМЕНТА
+MAT,1
+SECNUM,1
+E,1,2,4
+E,2,3,4
+
+! СТРОИМ ЭЛЕМЕНТР ИНЕРЦИИ В УЗЛЕ 2
+TYPE,3
+REAL,3
+E,2
+
+TYPE,2
+REAL,2
+E,3
+
+/VIEW,1,1,1,1
+/eshape,1
+GPLOT
+
+/SOL
+D,1,ALL,0
+/PBC,ALL,,1
+!SCREENSHOT
+
+! ЗАПРЕЩАЕТ ПЕРЕМЕЩЕНИЕ ПО Z И ВРАЩЕНИЕ ВОКРУГ X,Y
+DSYM,SYMM,Z
+
+D,ALL,UX,0 ! УБИРАЕМ КОЛЕБАНИЯ ВДОЛЬ Х
+ANTYPE,2
+MODOPT,LANB,3,1e-3,1000 ! НАХОДИМ 3 СОБСТВЕННЫЕ ЧАСТОТЫ (В ДЗ МОЖЕТ БЫТЬ 4)
+MXPAND,3,,,1 ! ПОСТАВИТЬ 4, ЕСЛИ 4 СТЕПЕНИ СВОБОДЫ
+
+SOLVE
+/POST1
+SET,LIST
+!SCREENSHOT С СОБСТВЕННЫМИ ЧАСТОТАМИ
+
+SET,,1
+PLDISP,1
+
+
+
+
+
+
+
+
+
+
+
+
+
+

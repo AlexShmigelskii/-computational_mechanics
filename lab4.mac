@@ -1,0 +1,80 @@
+FINISH
+/CLEEAR
+L= 150
+R=100
+B=10
+H=2
+Q=0.005
+E=2e5
+MU=0.3
+/PREP7
+
+ET,1,BEAM188,,,3
+MP,EX,1,E
+MP,PRXY,MU
+
+SECTYPE,1,BEAM,RECT
+SECDATA,B,H
+! СТРОИМ ТОЧКИ
+K,1,0,0,0
+K,2,R,R,0
+K,3,2*R,0,0
+K,4,2*R+L,0,0
+K,5,2*R+L,0,L
+K,6,R,R+L/4,0
+K,7,2*R+L,L/4
+
+/PNUM,KP,1
+/VIEW,1,1,1,1
+GPLOT
+L,3,4
+L,4,5
+LARC,1,2,3,R
+LARC,2,3,1,R
+
+/PNUM,LINE,1
+GPLOT
+
+!это не поднадобится в дз
+LSEL,S,,,1
+LSEL,A,,,2
+LATT,1,,1,,7,,1
+
+ALLSEL ! ЧТОБЫ ВСЁ ВЕРНУТЬ ОБРАТНО
+
+LSEL,S,,,3 !ВЫБИРАЕМ ЛИНИЮ 3
+LSEL,A,,,4
+LATT,1,,1,,6,,1
+
+ALLSEL
+
+LESIZE,ALL,L/10 ! ВСЕ ЛИНИИ БУДУТ РАЗБИТЫ НА 10 ЭЛ-ОВ
+LMESH,ALL
+/eshape, 1
+EPLOT ! РИСУЕТ ТОЛЬКО ЭЛЕМЕНТЫ
+
+! ДОБАВЛЯЕМ НАГРУЖЕНИЯ И ЗАКРЕПЛЕНИЯ
+/sol
+! ЗАКРЕПЛЯЕМ ТОЧКУ
+DK,1,ALL,0
+FK,2,FY,-q*L/8
+
+LSEL,S,,,2 ! ВЫБИРАЕТ ВТОРУЮ ЛИНИЮ
+ESLL,S ! ВЫБИРАЕТ ВСЕ ЭЛЕМЕНТЫ, ПРИНАДЛЕЖАЩИЕ ЛИНИИ
+
+SFBEAM,ALL,1,PRES,q
+
+ALLSEL
+/PBC,ALL,,1
+/PSF,PRES,NORM,2,0,1
+GPLOT
+! Здесь скриншот
+
+!В дз надо прописать  DSYM, SYMM, Z из-за наличия шарниров
+SOLVE
+/post1
+pldisp,1
+! Здесь скриншот
+
+PLESOL,S,eqv
+! Здесь скриншот

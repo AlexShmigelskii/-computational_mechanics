@@ -1,0 +1,89 @@
+FINISH
+/CLEAR
+
+A=0.5
+L=1.5
+H=0.01
+W=0.1
+T=0.02
+E=2e11
+MU=0.3
+
+/prep7
+ET,1,SHELL181
+ET,2,BEAM188,,,3
+MP,EX,1,E
+MP,PRXY,1,MU
+
+SECTYPE,1,SHELL
+SECDATA,H
+SECTYPE,2,BEAM,T ! T-ОБРАЗНОЕ
+SECDATA,W,W,T,T
+
+! ПЕРЕНОС ТОЧКИ
+SECOFFSET,USER,0,W-0.5*T+0.5*H
+
+! СТРОИМ ТОЧКИ
+K,1,0,0,0
+K,2,A,0,0
+K,3,0,-A,0
+LARC,2,3,1,A
+
+K,4,0,-A,L
+L,3,4
+
+! ВЫДАВЛИВАЕМ ПЕРВУЮ ЛИНИЮ ВДОЛЬ ВТОРОЙ ПРЯМОЙ
+ADRAG,1,,,,,,2
+
+/VIEW,1,-0.5,0.5,0.5
+GPLOT
+
+NUMMRG,ALL ! ИЗБАВЛЯЕМСЯ ОТ ПОВТОРНЫХ ЭЛЕМЕНТОВ ВО ВРЕМЯ ПРОТЯЖКИ
+NUMCMP,ALL ! ИЗБАВЛЯЕМСЯ ОТ ПРОПУСКОВ В НУМЕРАЦИИ
+
+K,6,0,0,L ! ОРИЕНТАЦИОННАЯ ТОЧКА
+
+LSEL,S, LOC,Z,0
+LATT,1,,2,,1,1,2
+ALLSEL
+
+LSEL,S,LOC,Z,L
+LATT,1,,2,,6,6,2
+ALLSEL
+
+AATT,1,,1,,1
+
+LESIZE,ALL,A/20
+AMESH,ALL ! РАЗБИВАЕТ ВСЕ ПЛОЩАДИ НА КЭ
+LMESH,1
+LMESH,3
+/ESHAPE,1
+GPLOT
+
+/SOL
+DL,1,,ALL,0
+SFL,3,PRES,1
+SBCTRAN
+/PBC,ALL,,1
+/PSF,PRES,NORM,2,0,1
+GPLOT
+
+! СНАЧАЛА РЕШАЕМ ЗАДАЧУ СТАТИКИ
+ANTYPE,0
+PSTRES,1
+SOLVE
+
+/POST1
+/SOL
+
+! РАСЧЕТ НА УСТОЙЧИВОСТЬ
+ANTYPE,1
+BUCOPT,LANB,1
+SOLVE
+
+/POST1
+SET,LIST
+
+/ESHAPE,0
+SET,,1
+PLDISP,1
