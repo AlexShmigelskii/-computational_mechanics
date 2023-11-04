@@ -71,7 +71,7 @@ GPLOT
 ! ЗДЕСЬ СДЕЛАТЬ СКРИНШОТ
 
 DSYM, SYMM, Z ! Запрещает перемещение вне плоскости
-s
+
 !OUTRES, ALL, ALL
 SOLVE
 /post1
